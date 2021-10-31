@@ -1,0 +1,39 @@
+version: '3'
+services:
+   ranking_api:
+     image: wiroforce-ranking-api
+     restart: always
+     build:
+          context: .
+     ports:
+       - 9018:3003
+     depends_on: 
+       - db
+
+   ranking_db:
+     image: "postgres:alpine" 
+     volumes:
+       - ranking-db-data:/var/lib/postgresql/data/
+     restart: always
+     environment:
+       - POSTGRES_USER=postgres
+       - POSTGRES_PASSWORD=1234
+       - POSTGRES_DB=wiroforce_ranking
+  
+    ranking_redis:
+     image: "redis:alpine"
+     command: ["redis-server", "--appendonly", "yes"]
+     hostname: ranking_redis
+     networks:
+      - redis-net
+     volumes:
+      - ranking-redis-data:/data
+
+volumes:
+  ranking-db-data:
+  ranking-redis-data:
+
+networks: 
+  default: 
+    external: 
+      name: wiroforce    
