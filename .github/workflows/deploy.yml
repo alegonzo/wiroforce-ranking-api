@@ -1,0 +1,17 @@
+name: Deploy
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: [self-hosted, linux]
+
+    steps:
+     - uses: actions/checkout@v2
+     - name: Despliegue
+       id: step_1
+       
+       run: |
+        docker-compose down
+        docker-compose up --build -d

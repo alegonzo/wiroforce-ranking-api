@@ -3,6 +3,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { config } from 'process';
 import { PlayerController } from './controllers/player.controller';
 import { RankingController } from './controllers/ranking.controller';
 import { Player } from './entities/player.entity';
@@ -19,10 +20,14 @@ import { CLIENT_NAME } from './utils/constants';
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
     }),
-    RedisModule.forRoot({
-      config: {
-        url: 'redis://localhost:6379',
-      },
+    RedisModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        config: {
+          url: configService.get<string>('REDIS_URL'),
+        },
+      }),
+      inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

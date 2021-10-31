@@ -8,7 +8,8 @@ services:
      ports:
        - 9018:3003
      depends_on: 
-       - db
+       - ranking_db
+       - ranking_redis
 
    ranking_db:
      image: "postgres:alpine" 
@@ -24,8 +25,6 @@ services:
      image: "redis:alpine"
      command: ["redis-server", "--appendonly", "yes"]
      hostname: ranking_redis
-     networks:
-      - redis-net
      volumes:
       - ranking-redis-data:/data
 
