@@ -28,11 +28,14 @@ export class RankingService {
     });
   }
 
-  findAllByUser(req): Promise<Ranking[]> {
+  async findAllByUser(req): Promise<any> {
     const player: Player = req.user;
-    return this.rankingRepository.find({
+    const rankings = await this.rankingRepository.find({
       where: { applicationId: player.applicationId },
     });
+    return {
+      results: rankings,
+    };
   }
 
   async findPlayers(id: string) {
@@ -40,7 +43,9 @@ export class RankingService {
       sortPolicy: 'high-to-low',
       updatePolicy: 'replace',
     });
-    return lb.top(20);
+    return {
+      results: await lb.top(20),
+    };
   }
 
   async findPlayersPaginated(data: RankingPaginationDto) {
