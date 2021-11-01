@@ -4,13 +4,13 @@ services:
      image: wiroforce-ranking-api
      restart: always
      build:
-          context: .
+       context: .
      ports:
        - 9018:3003
      depends_on: 
        - ranking_db
        - ranking_redis
-
+       
    ranking_db:
      image: "postgres:alpine" 
      volumes:
@@ -21,7 +21,7 @@ services:
        - POSTGRES_PASSWORD=1234
        - POSTGRES_DB=wiroforce_ranking
   
-    ranking_redis:
+   ranking_redis:
      image: "redis:alpine"
      command: ["redis-server", "--appendonly", "yes"]
      hostname: ranking_redis
