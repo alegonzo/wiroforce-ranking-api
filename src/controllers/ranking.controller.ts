@@ -26,7 +26,7 @@ export class RankingController {
 
   @Get()
   getRankingsMobile(@Req() req) {
-    return this.rankingService.findAllByAppId(req);
+    return this.rankingService.findAllByUser(req);
   }
 
   @Post('/upload-score')

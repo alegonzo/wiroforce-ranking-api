@@ -22,7 +22,13 @@ export class RankingService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  findAllByAppId(req): Promise<Ranking[]> {
+  findAllByAppId(applicationId: string): Promise<Ranking[]> {
+    return this.rankingRepository.find({
+      where: { applicationId },
+    });
+  }
+
+  findAllByUser(req): Promise<Ranking[]> {
     const player: Player = req.user;
     return this.rankingRepository.find({
       where: { applicationId: player.applicationId },
