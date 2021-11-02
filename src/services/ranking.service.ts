@@ -12,6 +12,7 @@ import { UploadScoreDto } from '../dto/upload-score.dto';
 import { Player } from '../entities/player.entity';
 import { Ranking } from '../entities/ranking.entity';
 import { PlayerService } from './player.service';
+import groupBy = require('lodash.groupby');
 
 @Injectable()
 export class RankingService {
@@ -43,8 +44,24 @@ export class RankingService {
       sortPolicy: 'high-to-low',
       updatePolicy: 'replace',
     });
+    const rankingPlayers = await lb.top(20);
+    const players = await this.playerService.findPlayersByIds(
+      rankingPlayers.filter((item) => item.id !== '-').map((item) => item.id),
+    );
+    const groupedPlayers = groupBy(players, 'id');
+
     return {
-      results: await lb.top(20),
+      results: rankingPlayers
+        .filter((item) => item.id !== '-')
+        .map(
+          (item) =>
+            new RankingResponseDto({
+              id: item.id,
+              rank: item.rank,
+              score: item.score,
+              username: groupedPlayers[item.id][0]?.username,
+            }),
+        ),
     };
   }
 
@@ -53,7 +70,23 @@ export class RankingService {
       sortPolicy: 'high-to-low',
       updatePolicy: 'replace',
     });
-    return lb.list(data.start, data.end);
+    const rankingPlayers = await lb.list(data.start, data.end);
+    const players = await this.playerService.findPlayersByIds(
+      rankingPlayers.filter((item) => item.id !== '-').map((item) => item.id),
+    );
+    const groupedPlayers = groupBy(players, 'id');
+
+    return rankingPlayers
+      .filter((item) => item.id !== '-')
+      .map(
+        (item) =>
+          new RankingResponseDto({
+            id: item.id,
+            rank: item.rank,
+            score: item.score,
+            username: groupedPlayers[item.id][0]?.username,
+          }),
+      );
   }
 
   async countUsersInRanking(id: string): Promise<number> {
@@ -94,7 +127,7 @@ export class RankingService {
       sortPolicy: 'high-to-low',
       updatePolicy: 'replace',
     });
-    return lb.update([{ id: player.username, value: body.score }]);
+    return lb.update([{ id: player.id, value: body.score }]);
   }
 
   async update(body: UpdateRankingDto) {

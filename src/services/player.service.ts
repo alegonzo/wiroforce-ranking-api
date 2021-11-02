@@ -14,10 +14,6 @@ export class PlayerService {
 
   async registerPlayer(body: CreatePlayerDto): Promise<Player> {
     const { username, applicationId } = body;
-    const exists = await this.playerRepository.findOne({
-      where: { username, applicationId },
-    });
-    if (exists) throw new BadRequestException('Ya existe el usuario');
 
     return this.playerRepository.save({
       username,
@@ -35,6 +31,6 @@ export class PlayerService {
   }
 
   findPlayersByIds(ids: string[]): Promise<Player[]> {
-    return this.findPlayersByIds(ids);
+    return this.playerRepository.findByIds(ids);
   }
 }

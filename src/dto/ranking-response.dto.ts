@@ -1,5 +1,5 @@
 export class RankingResponseDto {
-  playerId: string;
+  id: string;
   username: string;
   score: number;
   rank: number;
